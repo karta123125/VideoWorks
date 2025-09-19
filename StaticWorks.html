@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="zh-tw">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <!-- Bootstrap core CSS -->
+    <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/StaticWorks.css">
+    <script>
+        var flag = 0;
+        function changeColor(obj) {
+            //因为JS会把HTML标签当做一个对象  
+            //对象.属性 = 值;  
+            if (flag == 0) {
+                obj.style.background = 'pink';
+                flag = 1;
+            } else {
+                obj.style.background = 'white';
+                flag = 0;
+            }
+        }  
+    </script>
+
+    <title>靜態作品展示</title>
+</head>
+<!-- Optional JavaScript; choose one of the two! -->
+
+<!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+    crossorigin="anonymous"></script>
+
+<body>
+
+<!-- 頁面載入遮罩（用你自己的動畫檔案） -->
+<div id="preloader" aria-hidden="true">
+  <!-- 動畫可以是 GIF / APNG / Lottie / 自製 SVG 等 -->
+   <video autoplay muted loop playsinline>
+    <source src="./img/loading.mp4" type="video/mp4">
+  </video>
+</div>
+
+<!-- 左上角漢堡鈕（固定在頁面） -->
+<button class="menu-btn" type="button"
+        data-bs-toggle="offcanvas" data-bs-target="#siteMenu"
+        aria-controls="siteMenu" aria-label="打開選單">
+  <span class="menu-icon"></span>  <!-- 你也可以換成 <img src="./img/hamburger.png" alt=""> -->
+</button>
+
+<!-- 側邊滑出選單 -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="siteMenu" aria-labelledby="siteMenuLabel">
+  <div class="offcanvas-header">
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="關閉"></button>
+  </div>
+  <div class="offcanvas-body">
+    <nav class="nav flex-column">
+      <!-- 兩個分頁（換成你的實際檔名） -->
+      <a class="nav-link" href="./index.html">影片作品 VideoWorks</a>
+      <a class="nav-link" href="./StaticWorks.html">靜態作品 StaticWorks</a>
+
+      <hr class="my-3">
+      <!-- 如果還有頁面或錨點 -->
+
+    </nav>
+  </div>
+</div>
+
+    <main>
+
+          <!-- 影片及按鈕區 -->
+        <section class="hero-video ero-section">
+            <video class="hero-video__bg"
+                    src="./img/back2.mp4"
+                    autoplay
+                    muted
+                    loop
+                    playsinline   <!-- iOS 行動裝置必要 -->
+                    poster="./img/back-poster2.jpg"></video>
+            
+            <div class="container hero text-center">
+                <div class="row py-lg-5">
+                <div class="col-12">
+                    <h1>♡♡靜態作品♡♡</h1>
+                    <p class="lead">✧下滑查看更多✧</p>
+                </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="album py-5 bg-light">
+            <div class="container">
+
+                <!-- 分類列 -->
+                <div class="cat-filter d-flex flex-wrap align-items-center gap-2 mb-4">
+                <button type="button" class="btn cat-btn active" data-cat="繪圖">繪圖</button>
+                <button type="button" class="btn cat-btn" data-cat="海報">海報</button>
+                <button type="button" class="btn cat-btn" data-cat="實體物品">實體物品</button>
+                </div>
+
+                <!-- 作品格子容器 (JS 會自動塞卡片進來) -->
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" id="workGrid"></div>
+
+                <!-- 底部分類別 -->
+                <div class="cat-filter d-flex flex-wrap align-items-center gap-2 mt-4">
+                <button type="button" class="btn cat-btn" data-cat="繪圖">繪圖</button>
+                <button type="button" class="btn cat-btn" data-cat="海報">海報</button>
+                <button type="button" class="btn cat-btn" data-cat="實體物品">實體物品</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="item"><img id="modalImage" class="img-fluid" /></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 詳細介紹 Modal（多圖多段文字） -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+        <div class="modal-header border-0">
+            <h5 class="modal-title" id="detailTitle"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+        </div>
+        <div class="modal-body">
+            <div id="detailContent" class="detail-wrap"></div>
+        </div>
+        </div>
+    </div>
+    </div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="row align-items-center">
+      <!-- 左欄：留白或之後要放東西 -->
+      <div class="col-12 col-md-4 py-2"></div>
+      <!-- 中欄：icon1 + 文字（手機置中 / 桌機也置中） -->
+      <div class="col-12 col-md-4 text-center py-2">
+          <a href="./index.html" class="d-inline-block">
+            <img src="./img/icon2.png" class="footer-icon rounded mx-auto d-block" alt="...">
+          </a>  
+          <p class="text-center"><em><small>꙳⋆𓈒𓂂𓏸◌2025𓐍𓏸𓂂⋆♥꙳</small></em></p>
+      </div>
+      <!-- 右欄：回到最上面（手機置中 / 桌機靠右，並留右邊內距） -->
+      <div class="col-12 col-md-4 text-center text-md-end py-2 pe-md-3">
+        <a href="#" class="d-inline-block back-to-top">
+          <img src="./img/top.png" alt="回到最上面" class="back-to-top-img img-fluid">
+        </a>
+      </div>
+  </div>    
+
+ </footer>
+    
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        // 1) 作品資料
+        const works = [
+            { img: './img/15.png', title: '‣半身圖1<br/>使用工具：Photoshop', cat: '繪圖' },
+            { img: './img/16.jpg', title: '‣半身圖2<br/>使用工具：Photoshop', cat: '繪圖' },
+            { img: './img/17.png', title: '‣全身圖<br/>使用工具：Photoshop', cat: '繪圖' },
+            { img: './img/18.jpg', title: '‣Q版圖1<br/>使用工具：CLIP STUDIO', cat: '繪圖' },
+            { img: './img/19.png', title: '‣半身圖3<br/>使用工具：Photoshop', cat: '繪圖' },
+            { img: './img/20.png', title: '‣漫畫1<br/>使用工具：Photoshop', cat: '繪圖' },
+            { img: './img/21.jpg', title: '‣Q版圖2(接續Q版1)<br/>使用工具：CLIP STUDIO', cat: '繪圖' },
+            { img: './img/22.png', title: '‣大頭貼1<br/>使用工具：Photoshop', cat: '繪圖' },
+            { img: './img/23.jpg', title: '‣大頭貼2<br/>使用工具：Photoshop', cat: '繪圖' },
+            { img: './img/24.jpg', title: '‣電繪海報1<br/>使用工具：CLIP STUDIO、Photoshop', cat: '海報' },
+            { img: './img/25.jpg', title: '‣電繪海報2<br/>使用工具：CLIP STUDIO、Photoshop', cat: '海報' },
+            { img: './img/26.jpg', title: '‣電繪海報3(中間人物是另一位美宣畫的)<br/>使用工具：CLIP STUDIO、Photoshop', cat: '海報' },
+            { img: './img/27.png', title: '‣電繪海報4<br/>使用工具：CLIP STUDIO、Photoshop', cat: '海報' },
+            { img: './img/28.png', title: '‣電繪海報5<br/>使用工具：CLIP STUDIO、Photoshop', cat: '海報' },
+            { img: './img/29.jpg', title: '‣電繪海報6<br/>使用工具：CLIP STUDIO、Photoshop', cat: '海報' },
+            { img: './img/30.jpg', title: '‣平面海報1<br/>使用工具：Adobe Express', cat: '海報' },
+            { img: './img/31.png', title: '‣平面海報2<br/>使用工具：Adobe Express', cat: '海報' },
+            { img: './img/32.jpeg', title: '‣平面海報3<br/>使用工具：Adobe Express', cat: '海報' },
+            { img: './img/33.jpg', title: '‣課程海報1<br/>使用工具：Photoshop', cat: '海報' },
+            { img: './img/34.jpg', title: '‣課程海報2<br/>使用工具：Photoshop', cat: '海報' },
+            { img: './img/35.jpg', title: '‣課程海報3<br/>使用工具：Photoshop', cat: '海報' },
+            { img: './img/52.jpg', title: '‣向量海報<br/>使用工具：Illustrator', cat: '海報' },
+            { img: './img/53.jpg', title: '‣平面設計<br/>使用工具：Photoshop', cat: '海報' },
+            { img: './img/54.jpg', title: '‣向量設計(拉線有描)<br/>使用工具：Illustrator', cat: '海報' },
+            { title: '‣111學年度應日系系服', cat: '實體物品', type: 'detail',
+                images: [
+                    './img/36.jpg',
+                    './img/43.jpg',
+                    './img/44.jpg',
+                    ],
+                blocks: [
+                    { img: './img/41.jpg', html: '<p>設計理念：<br/>正面的「よきよき」（yokiyoki），意思等同於「好哇」、「好棒」的意思，是日本年輕人之間使用的流行語，再加上一隻招財貓，期許新生們在大學四年都會吉祥如意。<br/>而背面則是以日本富士山為主要造型，雲霧繚繞的樣子可以看出代表著真理大學應日系的「AUJP」。</p>' },
+                    { img: './img/42.jpg', html: '<p>系上學生們實際穿上的樣子。</p>' }
+                    ]
+            },
+            
+            { img: './img/37.jpg', title: '‣畢業旅行小隊徽章', cat: '實體物品', type: 'detail',
+                blocks: [
+                    { img:'./img/45.jpg', html:'<p>為了讓朋友們在出國旅行時可以別上一樣的徽章，我幫每個人繪製了一顆專屬的徽章！<br/>除了Q版的模樣以及日文名字以外，背景還加上了與人物相關的特點要素。</p>'},
+                    { img:'./img/46.jpg', html:'<p>因為其中一位臨時無法出席，最後只有四個人一起別上徽章。<p/>'}
+                    ]
+            },
+            { img: './img/38.jpg', title: '‣畢業旅行手冊', cat: '實體物品', type: 'detail',
+                blocks: [
+                    { img:'./img/47.png', html:'<p>身為畢業旅行的主揪，除了小隊徽章以外，我還將行程排好並製作了手冊！<br/>我參考了以前拿到過的旅行社手冊，製作出好理解又完整的編排；封面與封底是特殊材質，內頁則是一般的材質，好方便做筆記。</p>'},
+                    { img:'./img/48.jpg', html:'<p>結束旅行後還能將各種票券貼到手冊上做紀念。<p/>'},
+                    { img:'./img/49.jpg', html:'<p>最後一頁放了MEMO區，可以讓朋友們互相留言，書寫心得與祝福。<p/>'}    
+                    ]
+             },
+            { img: './img/39.jpg', title: '‣應日系與統精系的聯合茶會邀請卡', cat: '實體物品' },
+            { img: './img/40.jpg', title: '‣遊戲角色的職員證', cat: '實體物品', type: 'detail',
+                    blocks: [
+                    { img:'./img/50.jpg', html:'<p>興趣使然設計的角色職員卡，我參考了日本及台灣的職員證排版方式，並送印做出了20張pvc材質的小卡片，送給有興趣的玩家們。</p>'},
+                    { img:'./img/51.jpg', html:'<p>特別做了一張說明細節的介紹圖。<p/>'}
+                    ]
+            },
+        ];
+
+        // 取得 Bootstrap Modal 實例
+        const grid = document.getElementById('workGrid');
+        const detailModal = new bootstrap.Modal('#detailModal');
+
+        works.forEach((w, i) => {
+        const col = document.createElement('div');
+        col.className = 'col';
+        col.dataset.cat = w.cat;
+        const isDetail = (w.type === 'detail');
+
+        // 決定按鈕：普通放大 or 詳細介紹
+       const btnHtml = isDetail
+        ? `<button type="button" class="btn btn-sm btn-detail open-detail" data-index="${i}">
+            看詳細介紹( ˶'ᵕ'˶) 
+            </button>`
+        : `<button type="button" class="btn btn-sm btn-outline-light"
+            data-bs-toggle="modal" data-bs-target="#exampleModal" data-img="${w.img}">
+            放大來看( ˇωˇ )
+            </button>`;
+
+        // 卡片內的圖片區塊
+        let imgBlock = '';
+        if (w.images && w.images.length > 0) {
+            // 產生 Carousel
+            const carouselId = `carousel-${i}`;
+            imgBlock = `
+            <div id="${carouselId}" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+                <div class="carousel-inner">
+                ${w.images.map((src, idx) => `
+                    <div class="carousel-item ${idx === 0 ? 'active' : ''}">
+                    <img src="${src}" class="d-block w-100" alt="">
+                    </div>
+                `).join('')}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            `;
+        } else {
+            // 單圖
+            imgBlock = `<img class="img-fluid" src="${w.img}" alt="${w.title || ''}">`;
+        }
+        col.innerHTML = `
+        <div class="card shadow-sm">
+            ${imgBlock}
+            <div class="card-body">
+            <figure class="text-center"><p class="card-text">${w.title || ''}</p></figure>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                ${btnHtml}
+                </div>
+                <small class="text-muted">
+                <button type="button" class="btn btn-sm btn-outline-light" onclick="changeColor(this)">🤍</button>
+                </small>
+            </div>
+            </div>
+        </div>
+        `;
+
+        grid.appendChild(col);
+        });
+
+        // 點「看詳細介紹」→ 動態塞多個區塊
+        document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.open-detail');
+        if (!btn) return;
+
+        const w = works[+btn.dataset.index];
+        // 標題
+        document.getElementById('detailTitle').textContent = w.title || '';
+
+        // 內容（多個 block）
+        const wrap = document.getElementById('detailContent');
+        wrap.innerHTML = (w.blocks || []).map(b => `
+            <section class="detail-block">
+            <img src="${b.img}" alt="">
+            <div class="detail-text">${b.html || ''}</div>
+            </section>
+        `).join('');
+
+        detailModal.show();
+        });
+
+            // ---- 分類：一次綁定兩排按鈕 ----
+        const catButtons = Array.from(document.querySelectorAll('.cat-btn'));
+
+        function setActiveCat(cat){
+            catButtons.forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+        }
+
+        function applyFilter(cat){
+            setActiveCat(cat);
+            document.querySelectorAll('#workGrid .col[data-cat]').forEach(it => {
+            const cats = (it.dataset.cat || '').split(',').map(s => s.trim());
+            const match = cats.includes(cat);
+            it.classList.toggle('cat-hide', !match);
+            it.classList.toggle('d-none', !match);
+            });
+        }
+
+        function scrollToGridTop(){
+            const y = grid.getBoundingClientRect().top + window.pageYOffset - 12; // 可調整 12 為你想留的上方空白
+            window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+
+        // 點任一排分類按鈕都會套用 + 回到圖片區頂端
+        catButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+            const cat = btn.dataset.cat;
+            applyFilter(cat);
+            scrollToGridTop();
+            });
+        });
+
+        // 預設顯示「繪圖」
+        applyFilter('繪圖');
+  
+        const exampleModalEl = document.getElementById('exampleModal');
+        exampleModalEl.addEventListener('show.bs.modal', (event) => {
+        const btn = event.relatedTarget;                 // 觸發 modal 的那顆按鈕
+        const url = btn.getAttribute('data-img');        // 讀自訂屬性
+        const img = document.getElementById('modalImage');
+        img.src = url || '';
+        // 也順手放個 alt（可有可無）
+        img.alt = btn.closest('.card')?.querySelector('.card-text')?.textContent?.trim() || '';
+        });
+
+
+        // 點選單連結後自動關閉 offcanvas（行動裝置體驗）
+        document.addEventListener('click', (e) => {
+        const link = e.target.closest('.offcanvas .nav-link');
+        if (!link) return;
+        const canvasEl = document.getElementById('siteMenu');
+        const offcanvas = bootstrap.Offcanvas.getInstance(canvasEl) || new bootstrap.Offcanvas(canvasEl);
+        offcanvas.hide();
+        });
+
+       (() => {
+        // 目前頁面的標準化 pathname
+        const currPath = new URL(location.href).pathname.replace(/\/+$/, '');
+
+        document.querySelectorAll('#siteMenu .nav-link[href]').forEach(a => {
+            const rawHref = a.getAttribute('href');
+            if (!rawHref || rawHref.startsWith('#')) return; // 忽略錨點
+
+            // 把 href 轉成絕對 URL，再取 pathname
+            const linkPath = new URL(rawHref, location.href).pathname.replace(/\/+$/, '');
+
+            const isCurrIndex = (currPath === '' || currPath === '/' || currPath.endsWith('/index.html'));
+            const isLinkIndex = (linkPath === '' || linkPath === '/' || linkPath.endsWith('/index.html'));
+
+            // 判斷首頁 or 其他頁
+            if ((isCurrIndex && isLinkIndex) || currPath === linkPath) {
+            a.classList.add('active');
+            }
+        });
+        })();
+
+        // 1) 一開始標記「正在載入」，避免閃現
+        document.documentElement.classList.add('is-loading');
+        document.body.classList.add('is-loading');
+
+        window.addEventListener('load', () => {
+        const pre = document.getElementById('preloader');
+        // 2) 移除禁止捲動
+        document.documentElement.classList.remove('is-loading');
+        document.body.classList.remove('is-loading');
+        // 3) 淡出遮罩
+        pre.classList.add('is-hide');
+        // 4) 動畫結束後從 DOM 移除
+        pre.addEventListener('transitionend', () => pre.remove());
+        });
+
+        // －－ 安全網：若某些資源永遠載不到，N 秒後自動關閉（可選）－－
+        setTimeout(() => {
+        const pre = document.getElementById('preloader');
+        if (pre && !pre.classList.contains('is-hide')) {
+            document.documentElement.classList.remove('is-loading');
+            document.body.classList.remove('is-loading');
+            pre.classList.add('is-hide');
+        }
+        }, 8000); // 8 秒自動隱藏，可自行調整
+
+    </script>
+</body>
+
+</html>

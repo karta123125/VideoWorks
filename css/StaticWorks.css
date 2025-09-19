@@ -1,0 +1,326 @@
+/* 全螢幕遮罩 */
+#preloader{
+position: fixed;
+inset: 0;                           /* top:0 right:0 bottom:0 left:0 */
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;            /* 置中 */
+gap: 12px;
+background: #0e0b11;                /* 可改成你的主色或透明度 */
+color: #fff;
+z-index: 3000;                      /* 蓋過 modal/導航等 */
+transition: opacity .35s ease, visibility .35s ease;
+}
+#preloader img{
+display:block;
+width: 120px; height: 120px;        /* 可依你的動畫大小調整 */
+}
+
+/* 淡出時狀態 */
+#preloader.is-hide{
+opacity: 0;
+visibility: hidden;
+}
+
+/* 載入中禁止捲動（可選） */
+html.is-loading, body.is-loading { overflow: hidden; }
+
+/* 無動畫偏好：直接隱藏 */
+@media (prefers-reduced-motion: reduce){
+#preloader{ transition: none; }
+}
+
+@font-face {
+font-family: 'GenSenRounded';
+src: url('./fonts/GenSenRounded2TW-EL.woff2') format('woff2');
+font-weight: 200;  /* ExtraLight */
+font-style: normal;
+font-display: swap;
+}
+
+@font-face {
+font-family: 'GenSenRounded';
+src: url('./fonts/GenSenRounded2TW-L.woff2') format('woff2');
+font-weight: 300;  /* Light */
+font-style: normal;
+font-display: swap;
+}
+
+@font-face {
+font-family: 'GenSenRounded';
+src: url('./fonts/GenSenRounded2TW-R.woff2') format('woff2');
+font-weight: 400;  /* Regular */
+font-style: normal;
+font-display: swap;
+}
+
+@font-face {
+font-family: 'GenSenRounded';
+src: url('./fonts/GenSenRounded2TW-M.woff2') format('woff2');
+font-weight: 500;  /* Medium */
+font-style: normal;
+font-display: swap;
+}
+
+@font-face {
+font-family: 'GenSenRounded';
+src: url('./fonts/GenSenRounded2TW-B.woff2') format('woff2');
+font-weight: 700;  /* Bold */
+font-style: normal;
+font-display: swap;
+}
+
+@font-face {
+font-family: 'GenSenRounded';
+src: url('./fonts/GenSenRounded2TW-H.woff2') format('woff2');
+font-weight: 900;  /* Heavy */
+font-style: normal;
+font-display: swap;
+}
+
+        /* 左上角固定的漢堡鈕 */
+.menu-btn{
+position: fixed;
+top: 14px; left: 14px;
+z-index: 1100;                 /* 高於內容 */
+width: 44px; height: 44px;
+border: none; border-radius: 10px;
+background: rgba(0,0,0,.35);   /* 若要用圖片，改成 background: url('./img/menu.png') center/24px no-repeat; */
+backdrop-filter: blur(4px);
+display: grid; place-items: center;
+cursor: pointer;
+}
+
+/* 預設三條線圖示（若改用圖片，可把這段移除） */
+.menu-icon, .menu-icon::before, .menu-icon::after{
+content:"";
+display:block;
+width: 22px; height: 2px;
+background: #fff;
+border-radius: 2px;
+}
+.menu-icon::before{ transform: translateY(-6px); }
+.menu-icon::after { transform: translateY( 6px); }
+
+/* Offcanvas 外觀可依喜好微調 */
+.offcanvas{
+width: min(85vw, 320px);     /* 側欄寬度 */
+}
+.offcanvas .nav-link{
+font-family: 'GenSenRounded','Noto Sans TC',sans-serif;
+font-weight: 600;
+color:#572727;
+padding: .6rem 0;
+}
+        /* 當前頁：透明底的長方形 */
+.offcanvas .nav-link.active{
+color:#572727;                      /* 字色照原本，或自己指定 */
+background-color: rgba(231, 101, 190, 0.18);  /* 半透明底色 */
+border-radius: 6px;                 /* 圓角，可不要 */
+padding: .6rem .75rem;              /* 調整內距，讓背景不會緊貼字 */
+}
+
+.hero{
+position: relative;
+min-height: 100vh;          /* 這裡決定區塊高度，滿版用 100vh */
+display: flex;
+justify-content: center;    /* 水平置中 */
+align-items: center;        /* 垂直置中 */
+text-align: center;
+color: #fff;
+}
+
+.hero h1{
+font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
+font-weight: 700; /* 用 Bold */
+white-space: nowrap;   /* 不換行 */
+color: #fff;
+font-size: clamp(1.5rem, 4vw, 3rem); /* RWD 字體大小 */
+text-shadow: 12px 12px 12px rgba(0,0,0,0.6);
+}
+
+.hero p{
+font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
+font-weight: 500; /* 預設 Medium */
+white-space: nowrap;   /* 不換行 */
+color: #fff;
+text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+}
+
+.hero-video{
+position: relative;
+min-height: 60vh; /* 或 100vh */
+color: #fff;
+overflow: clip;   /* 防止捲動露邊 */
+}
+.hero-video__bg{
+position: absolute; inset: 0;
+width: 100%; height: 100%;
+object-fit: cover;      /* 讓影片滿版裁切 */
+object-position: center;
+z-index: 0;
+filter: blur(1.5px) brightness(0.6);          /* 想加柔焦/暗化可在這裡調 */
+}
+
+/* 內容層疊在影片上 */
+.hero-video > *:not(.hero-video__bg){ position: relative; z-index: 1; }
+
+/* 太花看不清：加半透明遮罩 */
+.hero-video::after{
+content:""; position:absolute; inset:0;
+background: rgba(200, 200, 200, 0.28);
+z-index:1;
+}
+
+.cat-filter { justify-content: center; } /* 置中可改成 flex-start */
+
+/* 置底被景色 */
+.site-footer {
+background-color: #fff1f0; 
+padding: 20px 0;          /* 加內距避免文字貼邊 */
+}
+
+.footer-icon {
+width: 200px;   /* 改成你想要的寬度，例如 60px、80px */
+height: auto;  /* 等比例縮放 */
+transition: transform 0.2s ease;
+}
+
+.footer-icon:hover {
+transform: scale(1.1); /* 滑鼠移過去放大一點（可選） */
+}
+
+/* 右邊的 top.png 大小與邊界 */
+.back-to-top-img {
+    max-width: 90px;  /* 視覺比例合適的上限，需可再調 */
+    height: auto;
+}
+
+/* 分類按鈕 ↓ */
+.cat-btn{
+font-family: 'GenSenRounded','Noto Sans TC',sans-serif;
+font-weight: 700;
+border: 1.5px solid #e765be;
+color: #e765be;
+background: transparent;
+border-radius: 999px;
+padding: .4rem 1rem;
+line-height: 1;
+}
+.cat-btn:hover{
+background: rgba(231,101,190,.08);
+}
+.cat-btn.active{
+/* 「透明長方形底」的效果 ↓ */
+background: rgba(231,101,190,.18);
+color: #572727;
+border-color: transparent;
+}
+
+@media (prefers-reduced-motion: no-preference){
+.col.cat-hide { transition: opacity .18s ease, transform .18s ease; }
+}
+.col.cat-hide{
+opacity: 0;
+transform: scale(.98);
+pointer-events: none;
+}
+
+.bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+@media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+    }
+}
+
+.btn-outline-light {
+    font-family: 'GenSenRounded', 'Kosugi Maru', 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+    color: #e069a2;
+    border-color: #c87386;
+}
+
+.btn-outline-light:hover {
+    background-color: #FFACB7;
+    color: #fff;
+}
+
+
+    /* 文字色彩 */
+p{
+    font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
+    font-weight: 400;
+    color:#952d74}
+h1,h2{
+    font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+    color:#572727}
+h3{
+    font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+    color: #572727;}
+
+.bg-light {
+    --bs-bg-opacity: 1;
+    background-color: #f7eaf8 !important;
+}
+
+.text-muted {
+    --bs-text-opacity: 1;
+    color: #c87386 !important;
+}
+
+.detail-img {
+    width: 500px;   /* 固定寬度 */
+    height: auto;   /* 高度自動 */
+    max-width: 100%; /* 手機上不會超出 */
+}
+
+.detail-wrap{
+max-width: 680px;      /* 固定閱讀寬度 */
+margin: 0 auto;
+}
+.detail-block + .detail-block{  /* 區塊間距 */
+margin-top: 1.25rem;
+}
+.detail-block img{
+display:block;
+width: 100%;
+height: auto;          /* 固定版面但讓圖等比縮放 */
+border-radius: 8px;
+}
+.detail-text{
+margin-top: .5rem;
+color:#555;
+line-height: 1.7;
+}
+.carousel-inner img {
+border-radius: .25rem;
+}
+
+/* 詳細介紹按鈕：實心背景 */ 
+.btn-detail { 
+font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
+font-weight: 700;
+background-color: #FFACB7;
+color: #572727;
+}
+.btn-detail:hover { 
+background-color: #ffffff; /* hover 深一點 */ 
+color: #e765be; 
+border-color: #c87386; 
+}
+
+#detailModal .modal-title{
+font-family: 'GenSenRounded', 'Kosugi Maru', 'Noto Sans TC', sans-serif !important;
+font-weight: 700;
+color: #572727;
+}
