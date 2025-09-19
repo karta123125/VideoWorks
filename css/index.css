@@ -1,0 +1,757 @@
+/* 全螢幕遮罩 */
+#preloader{
+  position: fixed;
+  inset: 0;                           /* top:0 right:0 bottom:0 left:0 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;            /* 置中 */
+  gap: 12px;
+  background: #0e0b11;                /* 可改成你的主色或透明度 */
+  color: #fff;
+  z-index: 3000;                      /* 蓋過 modal/導航等 */
+  transition: opacity .35s ease, visibility .35s ease;
+}
+#preloader img{
+  display:block;
+  width: 120px; height: 120px;        /* 可依你的動畫大小調整 */
+}
+
+/* 淡出時狀態 */
+#preloader.is-hide{
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* 載入中禁止捲動（可選） */
+html.is-loading, body.is-loading { overflow: hidden; }
+
+/* 無動畫偏好：直接隱藏 */
+@media (prefers-reduced-motion: reduce){
+  #preloader{ transition: none; }
+}
+
+@font-face {
+  font-family: 'GenSenRounded';
+  src: url('./fonts/GenSenRounded2TW-EL.woff2') format('woff2');
+  font-weight: 200;  /* ExtraLight */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GenSenRounded';
+  src: url('./fonts/GenSenRounded2TW-L.woff2') format('woff2');
+  font-weight: 300;  /* Light */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GenSenRounded';
+  src: url('./fonts/GenSenRounded2TW-R.woff2') format('woff2');
+  font-weight: 400;  /* Regular */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GenSenRounded';
+  src: url('./fonts/GenSenRounded2TW-M.woff2') format('woff2');
+  font-weight: 500;  /* Medium */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GenSenRounded';
+  src: url('./fonts/GenSenRounded2TW-B.woff2') format('woff2');
+  font-weight: 700;  /* Bold */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GenSenRounded';
+  src: url('./fonts/GenSenRounded2TW-H.woff2') format('woff2');
+  font-weight: 900;  /* Heavy */
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  font-family: 'GenSenRounded', 'Kosugi Maru', 'M PLUS Rounded 1c', 'Source Han Rounded CN', sans-serif;
+}
+
+/* 左上角固定的漢堡鈕 */
+.menu-btn{
+  position: fixed;
+  top: 14px; left: 14px;
+  z-index: 1100;                 /* 高於內容 */
+  width: 44px; height: 44px;
+  border: none; border-radius: 10px;
+  background: rgba(0,0,0,.35);   /* 若要用圖片，改成 background: url('./img/menu.png') center/24px no-repeat; */
+  backdrop-filter: blur(4px);
+  display: grid; place-items: center;
+  cursor: pointer;
+}
+
+/* 預設三條線圖示（若改用圖片，可把這段移除） */
+.menu-icon, .menu-icon::before, .menu-icon::after{
+  content:"";
+  display:block;
+  width: 22px; height: 2px;
+  background: #fff;
+  border-radius: 2px;
+}
+.menu-icon::before{ transform: translateY(-6px); }
+.menu-icon::after { transform: translateY( 6px); }
+
+/* Offcanvas 外觀可依喜好微調 */
+.offcanvas{
+  width: min(85vw, 320px);     /* 側欄寬度 */
+}
+.offcanvas .nav-link{
+  font-family: 'GenSenRounded','Noto Sans TC',sans-serif;
+  font-weight: 600;
+  color:#572727;
+  padding: .6rem 0;
+}
+
+/* 當前頁：透明底的長方形 */
+.offcanvas .nav-link.active{
+  color:#572727;                      /* 字色照原本，或自己指定 */
+  background-color: rgba(231, 101, 190, 0.18);  /* 半透明底色 */
+  border-radius: 6px;                 /* 圓角，可不要 */
+  padding: .6rem .75rem;              /* 調整內距，讓背景不會緊貼字 */
+}
+
+.hero{
+  position: relative;
+  min-height: 100vh;          /* 這裡決定區塊高度，滿版用 100vh */
+  display: flex;
+  justify-content: center;    /* 水平置中 */
+  align-items: center;        /* 垂直置中 */
+  text-align: center;
+  color: #fff;
+}
+
+.hero h1{
+  font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
+  font-weight: 700; /* 用 Bold */
+  white-space: nowrap;   /* 不換行 */
+  color: #fff;
+  font-size: clamp(1.5rem, 4vw, 3rem); /* RWD 字體大小 */
+  text-shadow: 12px 12px 12px rgba(0,0,0,0.6);
+}
+
+.hero p{
+  font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
+  font-weight: 500; /* 預設 Medium */
+  white-space: nowrap;   /* 不換行 */
+  color: #fff;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+}
+
+.hero-video{
+  position: relative;
+  min-height: 60vh; /* 或 100vh */
+  color: #fff;
+  overflow: clip;   /* 防止捲動露邊 */
+}
+.hero-video__bg{
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;      /* 讓影片滿版裁切 */
+  object-position: center;
+  z-index: 0;
+ filter: blur(1.5px) brightness(0.6);          /* 想加柔焦/暗化可在這裡調 */
+}
+
+/* 內容層疊在影片上 */
+.hero-video > *:not(.hero-video__bg){ position: relative; z-index: 1; }
+
+/* 太花看不清：加半透明遮罩 */
+.hero-video::after{
+  content:""; position:absolute; inset:0;
+  background: rgba(200, 200, 200, 0.28);
+  z-index:1;
+}
+
+  /* 文字色彩 */
+  p{
+    font-family: 'GenSenRounded', 'Kosugi Maru', 'Noto Sans TC', sans-serif;
+    font-weight: 400;
+    color:#952d74}
+  h1,h2{
+    font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+    color:#572727}
+  h3{
+    font-family: 'GenSenRounded', 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+    color: #572727;}
+
+
+  .gallery-section{
+  background: url('../img/TEST1.png') center/cover no-repeat;
+  }
+  
+  /* 置底被景色 */
+  .site-footer {
+  background-color: #fff1f0; 
+  padding: 20px 0;          /* 加內距避免文字貼邊 */
+  }
+
+  .footer-icon {
+  width: 200px;   /* 改成你想要的寬度，例如 60px、80px */
+  height: auto;  /* 等比例縮放 */
+  transition: transform 0.2s ease;
+  }
+
+  .footer-icon:hover {
+  transform: scale(1.1); /* 滑鼠移過去放大一點（可選） */
+  }
+
+  /* 右邊的 top.png 大小與邊界 */
+  .back-to-top-img {
+    max-width: 90px;  /* 視覺比例合適的上限，需可再調 */
+    height: auto;
+  }
+
+  /* 手機優化：避免貼邊、全部置中 */
+  @media (max-width: 767.98px) {
+    .site-footer .row { padding-inline: 12px; } /* 兩側留一點空 */
+    .site-footer .text-md-end { text-align: center !important; } /* 手機改置中 */
+    .back-to-top { padding-right: 8px; } /* 右邊再多留一點距離 */
+  }
+
+  /* 進場動畫 */
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 初始狀態：不可見（避免載入時就閃現） */
+  .reveal {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  /* 被觸發後套用動畫；可用 data-reveal-duration/ easing 覆蓋 */
+  .reveal--in {
+    animation: fadeInDown var(--reveal-duration, .8s) var(--reveal-easing, ease-out) forwards;
+  }
+
+  /* 支援使用者偏好：降低動作就直接顯示 */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; }
+    .reveal--in { animation: none; }
+  }
+
+    /* 按鈕顏色 */
+  .btn-myPink{
+    background: url('../img/11.png') center/cover no-repeat;
+    border:none;
+    padding: 70px 75px;       /* 調整大小 */
+    transition: filter .15s, transform .15s;
+  }
+  .btn-myPink:hover{
+    filter: brightness(1.05);   /* 沒有 hover 圖時，用亮一點代替 */
+  }
+
+  .btn-myPink2{
+    background: url('../img/12.png') center/cover no-repeat;
+    border:none;
+    padding: 70px 75px;       /* 調整大小 */
+    transition: filter .15s, transform .15s;
+  }
+  .btn-myPink2:hover{
+    filter: brightness(1.05);   /* 沒有 hover 圖時，用亮一點代替 */
+  }
+
+  /* 定義飄動動畫 */
+  @keyframes floatUpDown {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-8px); }  /* 往上移一點 */
+    100% { transform: translateY(0); }
+  }
+
+  /* 套用在按鈕上 */
+  .btn-myPink.float-btn{
+    animation: floatUpDown 2.5s ease-in-out infinite;
+  }
+
+  .btn-myPink2.float-btn{
+    animation: floatUpDown 2.5s ease-in-out infinite;
+  }
+  /* 只改 template 內的超連結，不影響頁面其他地方 */
+  .layout-a a{
+    color:#e765be;
+    text-decoration:underline;
+  }
+  .layout-a a:hover{
+    color:#cf57b0;
+  }
+
+  .title-with-bg{
+    display: inline-block;                 /* 讓背景只包住標題，不會佔滿整行 */
+    padding: 8px 20px;                     /* 內距，讓背景不要緊貼文字 */
+    border-radius: 8px;                    /* 圓角（可選） */
+    background: url('../img/10.png') center/cover no-repeat;
+    /* 如果要讓圖片依比例放大可以用 contain */
+    /* background-size: contain; */
+  }
+
+  /* 影片外框（共用樣式） */
+  .video-preview{
+    position: relative;
+    border-radius: 14px;
+    padding: 15px;                         /* 讓背景能露出一圈 */
+    overflow: hidden;                      /* 讓iframe圓角生效 */
+  }
+
+  /* 讓 iframe 也有圓角 */
+  .video-preview .ratio,
+  .video-preview iframe{
+    border-radius: 8px;
+  }
+
+  /* ── 四個不同背景（你可以改成自己的圖） ── */
+  .video-bg-1{
+    background: url('../img/9.png') center/cover no-repeat;   /* 有圖就會蓋上去 */
+  
+  }
+  .video-bg-2{
+    background: url('../img/9.png') center/cover no-repeat;
+  }
+  .video-bg-3{
+    background: url('../img/9.png') center/cover no-repeat;
+  }
+  .video-bg-4{
+    background: url('../img/9.png') center/cover no-repeat;
+  }
+
+  /* hover 小互動（可選） */
+  .video-preview:hover{
+    filter: brightness(1.02);
+    transform: translateY(-1px);
+    transition: .18s ease;
+  }
+
+    /* ─── 對話框基礎 ───────────────────────────────────────────────*/
+    @keyframes zoomIn  {from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1}}
+    @keyframes zoomOut {from{transform:scale(1);opacity:1} to{transform:scale(.5);opacity:0}}
+    
+    .dialog{
+      position:fixed;top:4vh;height:92vh;width:48vw;max-width:600px;
+      background:#fff7f7;border:4px solid #7d4747d6;border-radius:12px;
+      box-shadow:4px 6px 10px rgba(0,0,0,.15);
+      display:none;overflow:hidden;z-index:1055;
+    }
+    .dialog.show     {display:block;animation:zoomIn .3s forwards}
+    .dialog.zoom-out {animation:zoomOut .2s forwards}
+    
+    .dialog.left  {left:2vw; right:auto;}   /* 左半：與視窗留 2vw 邊距 */
+    .dialog.right {right:2vw;left:auto;}   /* 右半：同理 */
+    
+    /* 關閉鍵 */
+    .close-btn{
+      position:absolute;top:8px;right:12px;font-size:28px;line-height:1;
+      background:transparent;border:none;cursor:pointer
+    }
+    
+    /* 內容可捲動區 (預設流式排版) */
+    .dialog-body{
+      position:absolute;inset:48px 16px 16px 16px;
+      overflow-y:auto;padding-right:8px;
+    }
+    
+        /* 半透明背景（點它就關閉） */
+    .dialog-backdrop{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.38);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease;
+      z-index: 999;          /* 背景層 */
+    }
+
+    /* 顯示時可互動 */
+    .dialog-backdrop.show{
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* 確保你的 #sideDialog 在背景層之上 */
+    .dialog{
+      z-index: 1000;         /* 視需要高於 backdrop */
+    }
+
+    /* ─── ❶ 網格版面（兩行兩列）───────────────────────────────────*/
+    .dialog-body.grid-layout{
+      display:grid;
+      grid-template-columns:1fr 1fr;   /* 兩欄等寬 */
+      grid-auto-rows:auto;
+      gap:1rem;                        /* 行列間距 */
+    }
+    
+    /* ❷ 特定格子定位 */
+    /* ❶ 第一張圖片—維持 70 % 寬、佔第 1 行 */
+  /* ---- 保持原有設定 ... ---- */
+
+  /* ─── layout-a：25% / 75% 兩欄網格 ───────────────────────── */
+  .layout-a{
+    display:grid;
+    grid-template-columns:25% 75%;   /* 左 25%、右 75% */
+    grid-auto-rows:auto;
+    gap:1rem;
+  }
+
+  /* 第一張圖（上排滿欄、寬 70%） */
+  .layout-a .dialog-img-1{
+    grid-column:1 / 3;
+    grid-row:1 / 2;
+    width:70%;max-width:70%;
+    border:10px solid rgba(246, 223, 223, 0.789);border-radius:1.5px;
+    box-shadow:
+      0 0 0 6px #a6737393;
+    /* 裁掉左 +10px，避免露出陰影 */
+    clip-path:inset(0 -10px -10px 0 round 8px);
+    pointer-events:none;
+  }
+
+  /* 疊在同一格的說明文字 */
+  .layout-a .img-note{
+    grid-column:1 / 3;      /* 與圖片同一區域 → 疊上去 */
+    grid-row:1 / 2;
+    align-self:end;         /* 貼底 */
+    justify-self:end;       /* 靠右 */
+    margin:0 70px 15px 0;     /* 右 & 下留 8 px */
+    background:rgba(243, 158, 158, 0.55);
+    color:#572727;font-size:.85rem;
+    padding:2px 6px;border-radius:4px;
+    pointer-events:none;    /* 避免擋到圖片點擊 */
+  }
+
+  /* 外層：仍負責定位在 Grid 裡，不給背景 */
+  .layout-a .dialog-text{
+    grid-column:1 / 2;
+    grid-row:2 / 3;
+  }
+
+  /* 標題保持透明，只改字距 */
+  .layout-a .dialog-text h3{
+    margin-bottom:.5rem;
+  }
+
+  /* 文字（左下） */ /* 內層：真正的白底＋陰影＋留白 */
+  .layout-a .dialog-text-body{
+    grid-row:2 / 3;
+    background:rgba(255, 253, 253, 0.79);;                      /* 讓陰影有對比 */
+    border-radius:8px;                    /* 圓角 (可省略) */
+    width:100%;
+  }
+
+
+
+  /* 第二張圖（右下、95% 寬，再下移 45px） */
+  .layout-a .dialog-img-2{
+    grid-column:2 / 3;
+    grid-row:2 / 3;
+    width:95%;max-width:95%;
+    margin-top:45px;
+    border:10px solid rgba(246, 223, 223, 0.789);border-radius:1.5px;
+    box-shadow:
+      0 0 0 6px #a6737393;
+    /* 裁掉左 +10px，避免露出陰影 */
+    clip-path:inset(0 -10px -10px 0 round 8px);
+    pointer-events:none;
+  }
+
+  /* 跨欄 + 不換行 */
+  .layout-a .full-line{
+    grid-column:1 / 3;     /* 佔滿兩欄 */
+    white-space:nowrap;    /* 不自動斷行 */
+    margin:4px 0 0;        /* 視覺間距，可自行調整 */
+  }
+
+  /* ⑤ 通用圖片樣式（保留） */
+  .dialog img{
+    max-width:100%;
+    border:3px ;
+    border-radius:6px;
+    margin-bottom:16px;
+  }
+
+
+    
+    .dialog h3{font-weight:700;margin:24px 0 8px}
+
+  /* ─── 不同版面 class（可再擴充）─────────────────────────────*/
+
+  /* A. 兩欄網格 */
+  .grid-2col{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1rem;
+  }
+
+  /* B. 置中單欄 */
+  .flex-center{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:1rem;
+  }
+
+  .flex-center img{
+    display:block;                     /* 取消 img 預設行內空白 */
+    border:10px solid rgba(246,223,223,.789);
+    border-radius:1.5px;
+    box-shadow:0 0 0 6px #a6737393;
+    clip-path:inset(0 -10px -10px 0 round 8px);
+  }
+
+
+  /* 無限逆時針旋轉 */
+  @keyframes spin360 {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(-360deg); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* 套用這個 class 就會轉 */
+  .rotate {
+    animation: spin360 12s linear infinite, fadeIn 2.5s ease forwards;   /* 11 秒 轉一圈，可自行改秒數 */
+    transform-origin: 50% 50%;               /* 以圖中心為旋轉中心 */
+  }
+
+  .layout-d{
+    --pair-left :30%;
+    --pair-right:70%;
+    display:grid;
+    grid-template-columns:var(--pair-left) var(--pair-right);
+    gap:1rem;
+  }
+
+
+  /* ① 第一列 (左文字、右圖) */
+  .layout-d .intro-text{
+    grid-column:1 / 2; grid-row:1 / 2;
+  }
+  .layout-d .intro-img{
+    grid-column:2 / 3; grid-row:1 / 2;
+    width:95%;max-width:95%;
+    border-radius:8px;
+    border:10px solid rgba(246, 223, 223, 0.789);border-radius:1.5px;
+    box-shadow:
+      0 0 0 6px #a6737393;
+    /* 裁掉左 +10px，避免露出陰影 */
+    clip-path:inset(0 -10px -10px 0 round 8px);
+  }
+
+  /* ② 跨欄敘述 (第 2、3 列) */
+  .layout-d .full-1{ grid-column:1 / 3; grid-row:2 / 3;}
+  .layout-d .full-2{ grid-column:1 / 3; grid-row:3 / 4;}
+
+  /* (1) 把整個 .pair-row 定位到第 4 列，跨滿兩欄 */
+  .layout-d .pair-row{
+    grid-column:1 / 3;   /* 跨兩欄 */
+    grid-row:4 / 5;      /* 就是原本第 4 列 */
+  }
+
+  /* (2) 在它自己裡面再開一張 50 / 50 的 Grid */
+  .layout-d .pair-row{
+    display:grid;
+    grid-template-columns:50% 50%;   /* 想要的比例 */
+    gap:1rem;
+  }
+
+  /* 讓每個 <figure> 變成 flex 直排，caption 貼底 */
+  .layout-d .pair{
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;  /* 把子元素往底端推 */
+    margin:0;                  /* 把預設 1em margin 清掉 */
+  }
+
+  .layout-d .pair img{
+    border:10px solid rgba(246, 223, 223, 0.789);border-radius:1.5px;
+    box-shadow: 0 0 0 6px #a6737393;
+    /* 裁掉左 +10px，避免露出陰影 */
+    clip-path:inset(0 -10px -10px 0 round 8px);
+    margin-bottom:.4rem;  
+  }
+
+  .layout-d .left-img{
+    width:100%;
+  }
+
+  .layout-d .right-img{
+    width:100%;
+    display:block;
+    margin:0 auto;        /* 置中 */
+  }
+
+  /* 圖下的說明文字 */
+  .layout-d .pair figcaption{
+    font-size:.85rem; margin-top:.4rem;
+  }
+
+  /* ④ 第 5 列：左文字、右圖 */
+  .layout-d .mid-text{ grid-column:1 / 3; grid-row:5 / 6; }
+  .layout-d .mid-img {
+    grid-column:1 / 3;   /* 跨滿左 + 右 */
+    grid-row:6 / 7;      /* 新列次序 */
+    width:80%;           /* 自行決定大小 */
+    max-width:100%;
+    justify-self:center; /* 水平置中 */
+    align-self:center;   /* 垂直置中（可要可不要） */
+    border:10px solid rgba(246, 223, 223, 0.789);border-radius:1.5px;
+    box-shadow: 0 0 0 6px #a6737393;
+    /* 裁掉左 +10px，避免露出陰影 */
+    clip-path:inset(0 -10px -10px 0 round 8px);
+  }
+
+  /* ⑤ 右下角備註 */
+  .layout-d .d-note{
+    grid-column:1 / 3;
+    grid-row:7 / 8; 
+    justify-self:center; /* 水平置中 */
+    font-size:.9rem; margin:0;
+    background:rgba(243, 158, 158, 0.55);
+    color:#572727;
+    padding:2px 6px;border-radius:4px;
+  }
+
+  /* 所有可放大圖片：預設顯示小放大鏡游標 */
+  img[data-enlarge]{
+    cursor: zoom-in;          /* 大部分瀏覽器都有這個圖示 */
+    transition: filter .2s;   /* 順手加個微亮效果 */
+  }
+
+  /* 滑過時再亮一點，讓使用者更確定可以點 */
+  img[data-enlarge]:hover{
+    filter: brightness(1.07);
+  }
+
+  /* ─── Zoom 邊框 ─────────────────────────────────────────── */
+  .zoom-frame{
+    border:3px solid #f3acc5;         /* 粉紅邊框 */
+    border-radius:10px;                /* 圓角 */
+    box-shadow:0 0 0 2px #f9b4b4;    /* 第 2 層陰影 */
+  }
+  /* ─── 關閉鍵 ───────────────────────────────────────────── */
+  .btn-close-custom{
+    position:absolute;                 /* 固定在右上 */
+    top:-5px; right:-55px;            /* 稍微凸出邊框 */
+    width:40px; height:40px;
+    border:4px solid #f3acc5;
+    border-radius:50%;
+    background:#f3acc5;
+    color:#ffffff;
+    font-size:1.5rem;                  /* ✕ 字稍大 */
+    line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+
+  /* 手機版彈窗：全螢幕、置中、可捲動 */
+  @media (max-width: 768px) {
+    .dialog{
+      position: fixed;
+      top: 0;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100vw;
+      height: 100dvh;                 /* 比 100vh 更穩定 */
+      border-radius: 0;               /* 全螢幕不用圓角（可改） */
+      border-width: 3px;
+      z-index: 2000;
+    }
+    .dialog.left, .dialog.right{ left: 0; right: 0; }  /* 忽略左右 */
+
+    .dialog-body{
+      inset: 56px 12px 12px 12px;     /* 上留空給關閉鍵 */
+      overflow-y: auto;               /* 內容可捲 */
+    }
+
+    /* layout-a：改成單欄直排 */
+    .layout-a{
+      grid-template-columns: 1fr;
+      gap: .75rem;
+    }
+    .layout-a .dialog-img-1,
+    .layout-a .dialog-img-2{
+      grid-column: 1 / 2;
+      grid-row: auto;
+      width: 100%;
+      max-width: 100%;
+      margin-top: 0;
+      clip-path: inset(0);            /* 手機不用裁陰影，避免截邊 */
+    }
+    .layout-a .img-note{
+      justify-self: end;
+      margin: 0 8px 6px 0;
+    }
+    .layout-a .dialog-text,
+    .layout-a .dialog-text-body{
+      grid-column: 1 / 2;
+      width: 100%;
+    }
+    .layout-a .full-line{
+      grid-column: 1 / 2;
+      white-space: normal;            /* 手機允許自動換行 */
+    }
+
+    /* layout-d：主要區塊單欄、成對圖片上下排 */
+    .layout-d{
+      --pair-left: 100%;
+      --pair-right: 100%;
+      grid-template-columns: 1fr;
+    }
+    .layout-d .intro-img,
+    .layout-d .mid-img{
+      width: 100%;
+      max-width: 100%;
+      clip-path: inset(0);
+    }
+    .layout-d .pair-row{
+      grid-template-columns: 1fr;     /* 兩圖上下排 */
+    }
+  }
+
+  /* 開窗時鎖背景捲動（自訂 class） */
+  .body-lock { overflow: hidden; }
+
+  @media (max-width: 768px) {
+    .layout-d{
+      display: block !important;       /* 關掉 grid */
+    }
+    .layout-d > *{
+      margin: 0 0 1rem 0;              /* 元素之間留距 */
+    }
+    .layout-d .intro-img,
+    .layout-d .mid-img{
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      clip-path: none;                  /* 取消裁切，避免吃到文字 */
+    }
+  }
+
+  @media (max-width: 768px) {
+    img[data-enlarge] {
+      cursor: default !important;   /* 手機不要放大鏡游標 */
+      pointer-events: none !important; /* 禁止點擊 */
+      filter: none !important;      /* 不要亮度效果 */
+    }
+  }
