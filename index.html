@@ -154,6 +154,65 @@
       </div>
     </div>
   </div>
+
+  <!-- ======= GIF / MP4 迴圈展示區 ======= -->
+<section class="gif-wall py-5">
+  <div class="container">
+    <div class="row align-items-center mb-3">
+      <div class="col">
+        <div class="title-with-bg">
+          <h2>‣其他手繪小動畫</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- 兩欄（手機）/ 三欄（桌機），想加幾張都平均分 -->
+    <div class="row row-cols-2 row-cols-md-3 g-4">
+      <!-- 卡片 1 -->
+      <div class="col reveal" data-reveal-delay=".06s">
+        <figure class="gif-card m-0">
+          <video class="loop-clip w-100 rounded-3 shadow-sm"
+                 autoplay muted loop playsinline preload="metadata"
+                 poster="./img/gif1-poster.jpg"
+                 controlslist="nodownload noplaybackrate noremoteplayback"
+                 disablepictureinpicture>
+            <source src="./img/gif1.mp4" type="video/mp4">
+          </video>
+          <figcaption class="gif-caption small text-center mt-2">遊戲劇情</figcaption>
+        </figure>
+      </div>
+
+      <!-- 卡片 2 -->
+      <div class="col reveal" data-reveal-delay=".12s">
+        <figure class="gif-card m-0">
+          <video class="loop-clip w-100 rounded-3 shadow-sm"
+                 autoplay muted loop playsinline preload="metadata"
+                 poster="./img/gif2-poster.jpg"
+                 controlslist="nodownload noplaybackrate noremoteplayback"
+                 disablepictureinpicture>
+            <source src="./img/gif2.mp4" type="video/mp4">
+          </video>
+          <figcaption class="gif-caption small text-center mt-2">彈跳漢堡</figcaption>
+        </figure>
+      </div>
+
+      <!-- 卡片 3 -->
+      <div class="col reveal" data-reveal-delay=".18s">
+        <figure class="gif-card m-0">
+          <video class="loop-clip w-100 rounded-3 shadow-sm"
+                 autoplay muted loop playsinline preload="metadata"
+                 poster="./img/gif3-poster.jpg"
+                 controlslist="nodownload noplaybackrate noremoteplayback"
+                 disablepictureinpicture>
+            <source src="./img/gif3.mp4" type="video/mp4">
+          </video>
+          <figcaption class="gif-caption small text-center mt-2">狐狸跳遠</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <!--==========================================================
@@ -473,6 +532,31 @@ document.addEventListener('click', (e) => {
     }
   });
 })();
+
+// ===== 只在可見時播放 / 離開視窗暫停，省資源 =====
+(() => {
+  const clips = Array.from(document.querySelectorAll('video.loop-clip'));
+  if (!clips.length) return;
+
+  // 先嘗試播放（部分瀏覽器需互動才允許，失敗就忽略）
+  clips.forEach(v => v.play?.().catch(() => {}));
+
+  if (!('IntersectionObserver' in window)) return;
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(({ target, isIntersecting }) => {
+      if (isIntersecting) {
+        target.muted = true; // 行動裝置自動播放需要 muted
+        target.play?.().catch(() => {});
+      } else {
+        target.pause?.();
+      }
+    });
+  }, { threshold: 0.25 });
+
+  clips.forEach(v => io.observe(v));
+})();
+
 
 </script>
 

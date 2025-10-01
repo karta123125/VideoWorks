@@ -194,9 +194,9 @@ body {
 
 
   .gallery-section{
-  background: url('../img/TEST1.png') center/cover no-repeat;
+   background: url('../img/TEST1.png') center/cover no-repeat;
   }
-  
+
   /* 置底被景色 */
   .site-footer {
   background-color: #fff1f0; 
@@ -755,3 +755,94 @@ body {
       filter: none !important;      /* 不要亮度效果 */
     }
   }
+
+  /* ===== GIF / MP4 迴圈展示區 ===== */
+
+
+/* 卡片外觀：圓角＋柔和陰影，與 .video-preview 呼應 */
+.gif-card{
+  background: rgba(255,253,253,.86);
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+  transition: transform .18s ease, filter .18s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.gif-card:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.02);
+}
+
+/* 影片本體：維持比例＋圓角 */
+.loop-clip{
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  background: #000;
+  aspect-ratio: 16/9;    /* 素材若為 1:1 或 9:16，自行改成 1/1 或 9/16 */
+  object-fit: cover;
+  object-position: center;
+}
+
+/* 小標 */
+.gif-caption{
+  color: #572727;
+  line-height: 1.35;
+}
+
+/* 行動裝置微調 */
+@media (max-width: 767.98px){
+  .gif-card{ padding: 10px; }
+  .gif-caption{ font-size: .8rem; }
+}
+
+/* 讓 GIF 卡片也能用 reveal 動畫（沿用你現有 .reveal 規則） */
+.gif-wall .reveal{ opacity: 0; transform: translateY(-30px); }
+.gif-wall .reveal.reveal--in{
+  animation: fadeInDown var(--reveal-duration,.8s) var(--reveal-easing,ease-out) forwards;
+}
+
+/* 嘗試隱藏控制列（多數瀏覽器對靜音自動播放會隱藏） */
+.loop-clip::-webkit-media-controls-enclosure{ display: none !important; }
+
+/* === gif-wall：自帶背景 + 模糊（不改 HTML） === */
+.gif-wall{
+  position: relative;
+  isolation: isolate; /* 讓內部層級獨立，避免外部影響 */
+  --gif-bg: url('../img/TEST1.png');  
+}
+
+/* 背景圖層（先畫） */
+.gif-wall::before{
+  content: "";
+  position: absolute; inset: 0;
+  z-index: 0;
+  background: var(--gif-bg) center/cover no-repeat fixed; /* fixed 可做輕微視差，想關就拿掉 */
+  filter: blur(1px);
+  transform: scale(1.04); /* 避免模糊邊緣外露 */
+  will-change: transform, filter;
+}
+
+/* 霧面玻璃層（再畫） */
+.gif-wall::after{
+  content: "";
+  position: absolute; inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(255,255,255,.50), rgba(255,255,255,.35));
+  /* 這裡不需要 backdrop-filter，因為背景已被 ::before 模糊 */
+}
+
+/* 內容層（最後畫） */
+.gif-wall > *{
+  position: relative;
+  z-index: 2;
+}
+
+/* 後備方案：不支援 filter 的瀏覽器（少數） */
+@supports not (filter: blur(1px)){
+  .gif-wall::before{ filter: none; }
+  .gif-wall::after{ background: rgba(255,255,255,.65); }
+}
+
