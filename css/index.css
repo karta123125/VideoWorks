@@ -810,40 +810,61 @@ body {
 /* === gif-wall：自帶背景 + 模糊（不改 HTML） === */
 .wall-bg{
   position: relative;
-  isolation: isolate; /* 讓內部層級獨立，避免外部影響 */
-  --gif-bg: url('../img/TEST1.png');  
+  isolation: isolate;
+
+  --wall-bg: url('../img/TEST1.png');
 }
 
-/* 背景圖層（先畫） */
+/* 背景圖層 */
 .wall-bg::before{
   content: "";
-  position: absolute; inset: 0;
+  position: absolute;
+  inset: 0;
   z-index: 0;
-  background: var(--gif-bg) center/cover no-repeat fixed; /* fixed 可做輕微視差，想關就拿掉 */
+
+  background:
+    var(--wall-bg)
+    center/cover
+    no-repeat
+    fixed;
+
   filter: blur(1px);
-  transform: scale(1.04); /* 避免模糊邊緣外露 */
+
+  transform: scale(1.04);
+
   will-change: transform, filter;
 }
 
-/* 霧面玻璃層（再畫） */
+/* 霧面玻璃 */
 .wall-bg::after{
   content: "";
-  position: absolute; inset: 0;
+  position: absolute;
+  inset: 0;
   z-index: 1;
-  background: linear-gradient(180deg, rgba(255,255,255,.50), rgba(255,255,255,.35));
-  /* 這裡不需要 backdrop-filter，因為背景已被 ::before 模糊 */
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.50),
+      rgba(255,255,255,.35)
+    );
 }
 
-/* 內容層（最後畫） */
+/* 內容層 */
 .wall-bg > *{
   position: relative;
   z-index: 2;
 }
 
-/* 後備方案：不支援 filter 的瀏覽器（少數） */
+/* fallback */
 @supports not (filter: blur(1px)){
-  .wall-bg::before{ filter: none; }
-  .wall-bg::after{ background: rgba(255,255,255,.65); }
+  .wall-bg::before{
+    filter: none;
+  }
+
+  .wall-bg::after{
+    background: rgba(255,255,255,.65);
+  }
 }
 
   /* ======= REELS展示區 ======= */
