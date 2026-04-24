@@ -52,6 +52,21 @@
   </div>
 </div>
 
+<!--點擊放大播放（Modal）區域 -->
+<div class="modal fade" id="videoModal">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content bg-dark">
+
+      <video id="modalVideo"
+             class="w-100"
+             controls
+             playsinline>
+      </video>
+
+    </div>
+  </div>
+</div>
+
 <main>
   <!-- 影片及按鈕區 -->
   <section class="hero-video ero-section">
@@ -156,7 +171,7 @@
   </div>
 
   <!-- ======= GIF / MP4 迴圈展示區 ======= -->
-<section class="gif-wall py-5">
+<section class="gif-wall wall-bg py-5">
   <div class="container">
     <div class="row align-items-center mb-3">
       <div class="col">
@@ -210,6 +225,154 @@
         </figure>
       </div>
     </div>
+  </div>
+</section>
+
+  <!-- ======= REELS展示區 ======= -->
+<section class="reels-wall wall-bg py-5">
+  <div class="container">
+
+    <div class="row align-items-center mb-3">
+      <div class="col">
+        <div class="title-with-bg">
+          <h2>‣ Reels 動畫</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- 手機2欄 / 平板3欄 / 桌機4欄 -->
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+
+      <!-- Reel 1 -->
+      <div class="col">
+        <figure class="reel-card m-0">
+
+          <video class="reel-video preview-video clickable-video w-100 shadow-sm"
+                 muted loop playsinline
+                 preload="metadata"              
+                 data-video="./img/reel01.mp4">
+
+            <source src="./img/reel01.mp4" type="video/mp4">
+
+          </video>
+
+        </figure>
+      </div>
+
+      <!-- Reel 2 -->
+      <div class="col">
+        <figure class="reel-card m-0">
+
+          <video class="reel-video preview-video clickable-video w-100 shadow-sm"
+                 muted loop playsinline
+                 preload="metadata"                
+                 data-video="./img/reel02.mp4">
+
+            <source src="./img/reel02.mp4" type="video/mp4">
+
+          </video>
+
+        </figure>
+      </div>
+
+      <!-- Reel 3 -->
+      <div class="col">
+        <figure class="reel-card m-0">
+
+          <video class="reel-video preview-video clickable-video w-100 shadow-sm"
+                 muted loop playsinline
+                 preload="metadata"                 
+                 data-video="./img/reel03.mp4">
+
+            <source src="./img/reel03.mp4" type="video/mp4">
+
+          </video>  
+
+        </figure>
+      </div>
+
+      <!-- Reel 4 -->
+      <div class="col">
+        <figure class="reel-card m-0">
+
+          <video class="reel-video preview-video clickable-video w-100 shadow-sm"
+                 muted loop playsinline
+                 preload="metadata"                 
+                 data-video="./img/reel04.mp4">
+
+            <source src="./img/reel04.mp4" type="video/mp4">
+
+          </video>
+
+        </figure>
+      </div>
+
+      <!-- Reel 5 -->
+      <div class="col">
+        <figure class="reel-card m-0">
+
+          <video class="reel-video preview-video clickable-video w-100 shadow-sm"
+                 muted loop playsinline
+                 preload="metadata"                
+                 data-video="./img/reel05.mp4">
+
+            <source src="./img/reel05.mp4" type="video/mp4">
+
+          </video>
+
+        </figure>
+      </div>
+
+      <!-- Reel 6 -->
+      <div class="col">
+        <figure class="reel-card m-0">
+
+          <video class="reel-video preview-video clickable-video w-100 shadow-sm"
+                 muted loop playsinline
+                 preload="metadata"                
+                 data-video="./img/reel06.mp4">
+
+            <source src="./img/reel06.mp4" type="video/mp4">
+
+          </video>
+
+        </figure>
+      </div>
+
+      <!-- Reel 7 -->
+      <div class="col">
+        <figure class="reel-card m-0">
+
+          <video class="reel-video preview-video clickable-video w-100 shadow-sm"
+                 muted loop playsinline
+                 preload="metadata"                
+                 data-video="./img/reel07.mp4">
+
+            <source src="./img/reel07.mp4" type="video/mp4">
+
+          </video>
+
+        </figure>
+      </div>
+
+      <!-- Reel 8 -->
+      <div class="col">
+        <figure class="reel-card m-0">
+
+          <video class="reel-video preview-video clickable-video w-100 shadow-sm"
+                 muted loop playsinline
+                 preload="metadata"                
+                 data-video="./img/reel08.mp4">
+
+            <source src="./img/reel08.mp4" type="video/mp4">
+
+          </video>
+
+        </figure>
+      </div>
+
+    </div>
+
   </div>
 </section>
 
@@ -557,6 +720,52 @@ document.addEventListener('click', (e) => {
   clips.forEach(v => io.observe(v));
 })();
 
+//Hover 播放預覽
+document.querySelectorAll(".preview-video")
+.forEach(video => {
+
+  video.addEventListener("mouseenter", () => {
+    video.play();
+  });
+
+  video.addEventListener("mouseleave", () => {
+    video.pause();
+    video.currentTime = 0;
+  });
+
+});
+
+//點擊放大播放（Modal）
+const modal =
+  new bootstrap.Modal(
+    document.getElementById("videoModal")
+  );
+
+const modalVideo =
+  document.getElementById("modalVideo");
+
+document.querySelectorAll(".clickable-video")
+.forEach(video => {
+
+  video.addEventListener("click", () => {
+
+    const src = video.dataset.video;
+
+    modalVideo.src = src;
+
+    modal.show();
+
+  });
+
+});
+
+document.getElementById("videoModal")
+.addEventListener("hidden.bs.modal", () => {
+
+  modalVideo.pause();
+  modalVideo.src = "";
+
+});
 
 </script>
 
