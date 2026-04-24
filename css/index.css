@@ -808,14 +808,14 @@ body {
 .loop-clip::-webkit-media-controls-enclosure{ display: none !important; }
 
 /* === gif-wall：自帶背景 + 模糊（不改 HTML） === */
-.gif-wall{
+.wall-bg{
   position: relative;
   isolation: isolate; /* 讓內部層級獨立，避免外部影響 */
   --gif-bg: url('../img/TEST1.png');  
 }
 
 /* 背景圖層（先畫） */
-.gif-wall::before{
+.wall-bg::before{
   content: "";
   position: absolute; inset: 0;
   z-index: 0;
@@ -826,7 +826,7 @@ body {
 }
 
 /* 霧面玻璃層（再畫） */
-.gif-wall::after{
+.wall-bg::after{
   content: "";
   position: absolute; inset: 0;
   z-index: 1;
@@ -835,14 +835,52 @@ body {
 }
 
 /* 內容層（最後畫） */
-.gif-wall > *{
+.wall-bg > *{
   position: relative;
   z-index: 2;
 }
 
 /* 後備方案：不支援 filter 的瀏覽器（少數） */
 @supports not (filter: blur(1px)){
-  .gif-wall::before{ filter: none; }
-  .gif-wall::after{ background: rgba(255,255,255,.65); }
+  .wall-bg::before{ filter: none; }
+  .wall-bg::after{ background: rgba(255,255,255,.65); }
 }
 
+  /* ======= REELS展示區 ======= */
+.reel-video {
+
+  aspect-ratio: 9 / 16;
+
+  object-fit: cover;
+
+  border-radius: 16px;
+
+  cursor: pointer;
+
+  transition: transform 0.25s ease;
+
+}
+
+/* hover 微動畫 */
+
+.reel-video:hover {
+
+  transform: scale(1.04);
+
+}
+
+#modalVideo {
+
+  max-height: 80vh; 
+
+  max-width: 420px;
+
+  width: auto;
+
+  margin: auto;
+
+  display: block;
+
+  border-radius: 12px;
+
+}
